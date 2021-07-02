@@ -6,7 +6,8 @@ from vedo import show
 from vedo.utils import trimesh2vedo
 """## False data"""
 
-def create_dummy_data(mesh_deformed_path=Path(r"mesh_original"), mesh_deformation_file_path=Path(r"mesh_deformation")):
+def create_dummy_data(mesh_original_path=Path(r"mesh_original"), mesh_deformation_file_path=Path(r"mesh_deformation"),
+                      mesh_deformed_path=Path(r"mesh_deformed")):
     """
     This function will create a cone mesh and a deformation file to test the display.
     :return: None, create a mesh.obj and mesh.def files.
@@ -24,18 +25,27 @@ def create_dummy_data(mesh_deformed_path=Path(r"mesh_original"), mesh_deformatio
 
     displacement_vertices = []
     for x,_,z in mesh.vertices:
-        displacement_vertices.append([abs(cos(z)),cos(x), 0.5*np.random.random_sample()])
-    displacement_vertices = np.array(displacement_vertices)
+        displacement_vertices.append([0.2*abs(cos(z)) * 0.1 * np.random.random_sample(),0.2*cos(x), 0.2*np.random.random_sample()])
 
-    """### Create dummy files"""
-    mesh_save_path = mesh_deformed_path / "mesh.obj"
+    displacement_vertices = np.array(displacement_vertices)
+    displacement_vertices = np.around(displacement_vertices,  decimals = 3)
+
+    #Create dummy files
+    mesh_save_path = mesh_original_path / "mesh.obj"
     mesh.export(mesh_save_path)
     def_save_path = mesh_deformation_file_path / "mesh.def"
     with open(def_save_path, "w") as file:
         for d in displacement_vertices:
             file.write(f"{d[0]},{d[1]},{d[2]}\n")
 
-"""## Show displacement"""
+    # Save the deformed files
+    mesh.vertices = mesh.vertices + displacement_vertices
+    meshdef_save_path = mesh_deformed_path / "mesh.obj"
+    mesh.export(meshdef_save_path)
+
+    return displacement_vertices
+
+# Show displacement
 
 class Results():
     def __init__(self, mesh_file, results_file, type_results="vertex"):
@@ -60,7 +70,7 @@ class Results():
         self.name = mesh_file.name
         self.extension = mesh_file.suffix
         self.type_results = type_results
-        self.mesh = trimesh.load(str(mesh_file))
+        self.mesh = trimesh.load(str(mesh_file), process=False)
         self.results_file = results_file
         self.load_results()
         
@@ -128,10 +138,11 @@ class Results():
         disp.addScalarBar(title= f"{test.name} colored by {self.display_type} ")
 
         show(disp)
-    
-create_dummy_data()
-test = Results(Path("mesh_original/mesh.obj"), Path("mesh_deformation/mesh.def"), "vertex")
-test.errors_corrections()
-test.apply_results(display="x")
-test.vedo_display() # First visualisation
+
+if __name__ == "__main__":
+    create_dummy_data()
+    test = Results(Path("mesh_original/mesh.obj"), Path("mesh_deformation/mesh.def"), "vertex")
+    test.errors_corrections()
+    test.apply_results(display="x")
+    test.vedo_display() # First visualisation
 
