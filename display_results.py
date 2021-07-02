@@ -112,7 +112,7 @@ class Results():
         """
         Apply the deformation results to the mesh.
         Args
-        -display (str): ("x","y","z","n") Display the x,y,z or norme of the deformation
+        -display (str): ("x","y","z","n", "t") Display the x,y,z, norme or total of the deformation
         -color_map (srt): ("viridis") (see matplotlib.pyplot.colormaps)
         """
         display = str(display).lower()
@@ -126,8 +126,10 @@ class Results():
             self.display_deformation = np.array([i[2] for i in self.deformation])
         elif display == "n":
             self.display_deformation = np.sqrt (self.deformation[:,0]**2 + self.deformation[:,1]**2 + self.deformation[:,2]**2)
+        elif display == "t":
+            self.display_deformation = np.sum(self.deformation, axis=1)
         else:
-            raise Exception("display must be 'x','y','z' or 'n' not %s"%display)
+            raise Exception("display must be 'x','y','z', 'n' or 't' not %s"%display)
 
         self.mesh.visual.vertex_colors = trimesh.visual.interpolate(self.display_deformation, color_map=color_map)
 
@@ -135,7 +137,7 @@ class Results():
         """Display the results in a 3D graph with vendo"""
         disp = trimesh2vedo(self.mesh)
         disp.pointColors(self.display_deformation, cmap='jet')
-        disp.addScalarBar(title= f"{test.name} colored by {self.display_type} ")
+        disp.addScalarBar(title= f"{self.name} colored \n by {self.display_type} ")
 
         show(disp)
 
