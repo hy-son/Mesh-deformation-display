@@ -143,7 +143,7 @@ class Results():
         if not to_file:
             show(disp)
         else:
-            exportWindow(f"mesh_deformation/{self.name}.html")
+            disp.write(f"mesh_deformation/{self.name}.ply")
 
 if __name__ == "__main__":
     create_dummy_data()
