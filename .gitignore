@@ -5,6 +5,8 @@ __pycache__/
 
 # Files extensions
 *.def
+*.stl
+*.obj
 # C extensions
 *.so
 
