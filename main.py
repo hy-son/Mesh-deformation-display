@@ -11,7 +11,7 @@ files.reverse()
 
 logging.basicConfig(level=logging.DEBUG, filename= f'logs.log', filemode='w', format='%(asctime)s - %(levelname)s - %(message)s')
 log = logging.getLogger("Deformation")
-log.info(f"Start working on {str(len(files)) files}\n\n")
+log.info(f"Start working on {str(len(files))} files\n\n")
 
 for ori in tqdm(files):
     log.info("---------------------------------")

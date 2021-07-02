@@ -6,7 +6,7 @@ from numpy import asarray
 from trimesh import load_mesh
 
 class Compare():
-    def __init__(self, mesh_orignal, mesh_deformed, save_path="mesh_deformation"):
+    def __init__(self, mesh_orignal, mesh_deformed, save_path="mesh_deformation", log=None):
         """
         This class will align two files using the principal axes of inertia and refined the alignement with an
          interative closest point (trimesh.registration.mesh_other) and save the vertices movement in a .def file
@@ -19,6 +19,14 @@ class Compare():
         self.mesh_deformed_path = Path(mesh_deformed)
         self.name = self.mesh_original_path.stem
         self.save_path = Path(save_path)
+        self.log = log
+
+    def logging(self,txt, lvl = "info"):
+        if self.log:
+            if lvl=="info":
+                self.log.info(str(txt))
+            elif lvl== "debug":
+                self.log.debug(str(txt))
 
     def align(self):
         mesh_original = load_mesh(self.mesh_original_path, process=False)
@@ -29,11 +37,12 @@ class Compare():
             samples= mesh_deformed.vertices.shape[0] // 10
         else:
             samples = mesh_deformed.vertices.shape[0] // 2
+        self.logging(f"Meshes loaded, they will be aligned with {samples} samples")
         mesh_to_other, cost = mesh_deformed.register(mesh_original, samples=samples)
         #mesh_to_other, cost= mesh_deformed.register(mesh_original) # To a rigid alignement
         #mesh_to_other, transformed ,cost = icp(mesh_deformed.vertices,mesh_original.vertices)  # To a rigid alignement
         deformation = asarray(mesh_deformed.apply_transform(mesh_to_other).vertices - mesh_original.vertices)
-
+        self.logging("Meshes aligned and deformation computed")
         self.deformation = deformation
 
     def save_def(self):
@@ -42,6 +51,7 @@ class Compare():
         """
         save_path = str(self.save_path / (str(self.name) + ".def" ))
         savetxt(save_path, self.deformation, fmt="%.8f", delimiter=',')
+        self.logging(f"Deformation saved in {str(save_path)}")
 
 # Test
 if __name__ == "__main__":
