@@ -4,6 +4,7 @@ from pathlib import Path
 
 from vedo import show
 from vedo.utils import trimesh2vedo
+from vedo.io import exportWindow
 """## False data"""
 
 def create_dummy_data(mesh_original_path=Path(r"mesh_original"), mesh_deformation_file_path=Path(r"mesh_deformation"),
@@ -67,7 +68,7 @@ class Results():
             raise Exception("type_results should be 'vertex' or 'edge' not '%s'"%(type_results))
 
         # Store data
-        self.name = mesh_file.name
+        self.name = mesh_file.stem
         self.extension = mesh_file.suffix
         self.type_results = type_results
         self.mesh = trimesh.load(str(mesh_file), process=False)
@@ -133,13 +134,16 @@ class Results():
 
         self.mesh.visual.vertex_colors = trimesh.visual.interpolate(self.display_deformation, color_map=color_map)
 
-    def vedo_display(self):
+    def vedo_display(self, to_file=False):
         """Display the results in a 3D graph with vendo"""
         disp = trimesh2vedo(self.mesh)
         disp.pointColors(self.display_deformation, cmap='jet')
         disp.addScalarBar(title= f"{self.name} colored \n by {self.display_type} ")
 
-        show(disp)
+        if not to_file:
+            show(disp)
+        else:
+            exportWindow(f"mesh_deformation/{self.name}.html")
 
 if __name__ == "__main__":
     create_dummy_data()
