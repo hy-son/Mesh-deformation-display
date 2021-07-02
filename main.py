@@ -16,14 +16,18 @@ log.info(f"Start working on {str(len(files))} files\n\n")
 for ori in tqdm(files):
     log.info("---------------------------------")
     name = ori.name
-    log.info(f"Start working on {name}")
-    compare = Compare(f"mesh_original/{name}", f"mesh_deformed/{name}")
-    compare.align()
-    compare.save_def()
+    try:
+        log.info(f"Start working on {name}")
+        compare = Compare(f"mesh_original/{name}", f"mesh_deformed/{name}")
+        compare.align()
+        compare.save_def()
 
-    display = Results(Path(f"mesh_original/{name}"), Path(f"mesh_deformation/{ori.stem}.def"), "vertex")
-    display.errors_corrections()
+        display = Results(Path(f"mesh_original/{name}"), Path(f"mesh_deformation/{ori.stem}.def"), "vertex")
+        display.errors_corrections()
 
-    display.apply_results(display="t")
-    display.vedo_display(to_file=True)
+        display.apply_results(display="t")
+        display.vedo_display(to_file=True)
+    except Exception as e:
+        log.error("FATAL ERROR: ")
+        log.error(str(e))
 
