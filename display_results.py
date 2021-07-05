@@ -109,6 +109,23 @@ class Results():
         elif self.type_results == "edge":
             raise Exception("Not implemented")
 
+    def deformation_results(self, select="t"):
+        """Return an np.array with the selected deformation..
+        select = ["x", "y", "z", "t", "n" ]"""
+        select = str(select)
+        if select == "x":
+            return np.array([i[0] for i in self.deformation])
+        elif select == "y":
+            return np.array([i[1] for i in self.deformation])
+        elif select == "z":
+            return np.array([i[2] for i in self.deformation])
+        elif select == "n":
+            return np.sqrt (self.deformation[:,0]**2 + self.deformation[:,1]**2 + self.deformation[:,2]**2)
+        elif select == "t":
+            return np.sum(self.deformation, axis=1)
+        else:
+            raise Exception("display must be 'x','y','z', 'n' or 't' not %s"%select)
+
     def apply_results(self,display="x" ,color_map="viridis"):
         """
         Apply the deformation results to the mesh.
@@ -119,19 +136,7 @@ class Results():
         display = str(display).lower()
         self.display_type = display
         # Select the x,y, z or norme value of the displacement
-        if display == "x":
-            self.display_deformation = np.array([i[0] for i in self.deformation])
-        elif display == "y":
-            self.display_deformation = np.array([i[1] for i in self.deformation])
-        elif display == "z":
-            self.display_deformation = np.array([i[2] for i in self.deformation])
-        elif display == "n":
-            self.display_deformation = np.sqrt (self.deformation[:,0]**2 + self.deformation[:,1]**2 + self.deformation[:,2]**2)
-        elif display == "t":
-            self.display_deformation = np.sum(self.deformation, axis=1)
-        else:
-            raise Exception("display must be 'x','y','z', 'n' or 't' not %s"%display)
-
+        self.display_deformation = self.deformation_results(select=display)
         self.mesh.visual.vertex_colors = trimesh.visual.interpolate(self.display_deformation, color_map=color_map)
 
     def vedo_display(self, to_file=False):
@@ -145,10 +150,20 @@ class Results():
         else:
             disp.write(f"mesh_deformation/{self.name}.ply")
 
+    def export_vtk(self,):
+        """Export the results to a vtk files"""
+        import pyvista as pv
+
+        pv_results = pv.wrap(self.mesh)
+        for select in ["x", "y", "z", "t", "n"]:
+            pv_results.point_arrays[select] = self.deformation_results(select=select)
+        pv_results.save(f"mesh_deformation/{self.name}.vtk")
+
 if __name__ == "__main__":
     create_dummy_data()
     test = Results(Path("mesh_original/mesh.obj"), Path("mesh_deformation/mesh.def"), "vertex")
     test.errors_corrections()
-    test.apply_results(display="x")
+    test.apply_results(display="n")
+    test.export_vtk()
     test.vedo_display() # First visualisation
 
