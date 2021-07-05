@@ -24,9 +24,8 @@ for ori in tqdm(files):
 
         display = Results(Path(f"mesh_original/{name}"), Path(f"mesh_deformation/{ori.stem}.def"), "vertex")
         display.errors_corrections()
+        display.export_vtk(f"mesh_deformation/{ori.stem}.vtk")
 
-        display.apply_results(display="t")
-        display.vedo_display(to_file=True)
     except Exception as e:
         log.error("FATAL ERROR: ")
         log.error(str(e))
