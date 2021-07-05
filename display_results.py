@@ -150,20 +150,20 @@ class Results():
         else:
             disp.write(f"mesh_deformation/{self.name}.ply")
 
-    def export_vtk(self,):
-        """Export the results to a vtk files"""
+    def export_vtk(self, file_out):
+        """Export the results to a vtk files at file_out"""
         import pyvista as pv
 
         pv_results = pv.wrap(self.mesh)
         for select in ["x", "y", "z", "t", "n"]:
             pv_results.point_arrays[select] = self.deformation_results(select=select)
-        pv_results.save(f"mesh_deformation/{self.name}.vtk")
+        pv_results.save(file_out)
 
 if __name__ == "__main__":
     create_dummy_data()
     test = Results(Path("mesh_original/mesh.obj"), Path("mesh_deformation/mesh.def"), "vertex")
     test.errors_corrections()
     test.apply_results(display="n")
-    test.export_vtk()
+    test.export_vtk("mesh_deformation/mesh.vtk")
     test.vedo_display() # First visualisation
 
