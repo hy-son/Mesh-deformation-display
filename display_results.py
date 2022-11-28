@@ -10,13 +10,14 @@ from vedo.io import exportWindow
 def create_dummy_data(mesh_original_path=Path(r"mesh_original"), mesh_deformation_file_path=Path(r"mesh_deformation"),
                       mesh_deformed_path=Path(r"mesh_deformed")):
     """
-    This function will create a cone mesh and a deformation file to test the display.
+    This function will load the standford bunny and a deformation to test the display.
     :return: None, create a mesh.obj and mesh.def files.
     """
-    mesh = trimesh.creation.cone(radius= 10, height= 10)
-    v,f = trimesh.remesh.subdivide_to_size(mesh.vertices, mesh.faces,  max_edge= 0.5 , max_iter=10)
-    mesh = trimesh.Trimesh(vertices=v, faces=f)
+    #mesh = trimesh.creation.cone(radius= 10, height= 10)
+    #v,f = trimesh.remesh.subdivide_to_size(mesh.vertices, mesh.faces,  max_edge= 0.5 , max_iter=10)
+    #mesh = trimesh.Trimesh(vertices=v, faces=f)
 
+    mesh = trimesh.load(r"mesh_original/mesh.obj")
     number_edges = len(mesh.edges)
     number_vertices = len(mesh.vertices)
 
@@ -86,7 +87,7 @@ class Results():
         # Count errors faces
         err = trimesh.repair.broken_faces(self.mesh)
         if len(err)>0:
-            print("WARNING: Broken %S faces detected in mesh"%len(err))
+            print("WARNING: Broken %S faces detected in mesh", int(len(err)))
 
     def load_results(self):
         """
