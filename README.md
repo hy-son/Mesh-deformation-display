@@ -36,6 +36,15 @@ folder and run `main.py`.
 - `*.def`: A simple txt file containing the X,Y and Z deformation of every vertices
 - `*.vtk`: A Paraview file, allowing to see the mesh and it's deformations.
 
+The `main.py` script can be called with a few arguments:
+- `path_original`: path to the original folder containing the original files ("mesh_original" by default).
+- `path_deformed`: path to the deformed folder containing the deformed files ("mesh_deformed" by default).
+- `only_icp`: boolean describing if only the ICP methods is used or if the principal axes of inertial are used before the ICP (default: False, the principal axes of inertial are used before the ICP).
+```python
+python main.py --path_original "mesh_original" --path_deformed "mesh_deformed" --only_icp "True"
+# Here only the ICP methods is used to align the files together.
+```
+
 Note:
 In Paraview, the `t` deformation correspond to the sum of the X,Y and Z deformation and `n` is the normal of those 
 deformation.
