@@ -31,6 +31,7 @@ class Compare():
     def align(self):
         mesh_original = load_mesh(self.mesh_original_path, process=False)
         mesh_deformed = load_mesh(self.mesh_deformed_path, process=False)
+        # For optimisation reason, not all points are used for the alignment.
         if mesh_deformed.vertices.shape[0] > 100000:
             samples= mesh_deformed.vertices.shape[0] // 100
         elif mesh_deformed.vertices.shape[0] > 1000:
@@ -41,7 +42,8 @@ class Compare():
         mesh_to_other, cost = mesh_deformed.register(mesh_original, samples=samples)
         #mesh_to_other, cost= mesh_deformed.register(mesh_original) # To a rigid alignement
         #mesh_to_other, transformed ,cost = icp(mesh_deformed.vertices,mesh_original.vertices)  # To a rigid alignement
-        deformation = asarray(mesh_deformed.apply_transform(mesh_to_other).vertices - mesh_original.vertices)
+        mesh_aligned = mesh_deformed.apply_transform(mesh_to_other)
+        deformation = asarray(mesh_aligned.vertices - mesh_original.vertices)
         self.logging("Meshes aligned and deformation computed")
         self.deformation = deformation
 
