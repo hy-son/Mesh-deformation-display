@@ -45,9 +45,11 @@ python main.py --path_original "mesh_original" --path_deformed "mesh_deformed" -
 # Here only the ICP methods is used to align the files together.
 ```
 
-Note:
+Notes:
 In Paraview, the `t` deformation correspond to the sum of the X,Y and Z deformation and `n` is the normal of those 
 deformation.
+
+If `only_icp` is ```False```, the [Trimesh register function](https://trimsh.org/trimesh.base.html#trimesh.base.Trimesh.register) is used. If `True` the [Trimesh icp function](https://trimsh.org/trimesh.registration.html#trimesh.registration.icp) is used.
 
 ## Output data:
 Original files and there deformation are saved in the `mesh_deformation` folder. The `vtk` file can be opened with the software Paraview.
